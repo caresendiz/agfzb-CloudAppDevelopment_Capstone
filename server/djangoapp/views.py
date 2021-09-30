@@ -3,7 +3,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
+from .models import CarModel
 # from .restapis import related methods
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -20,7 +22,8 @@ logger = logging.getLogger(__name__)
 # Create an `about` view to render a static about page
 def about(request):
     context = {}
-    return render(request, 'djangoapp/about.html', context)
+    if request.method == "GET":
+        return render(request, 'djangoapp/about.html', context)
 
 
 # Create a `contact` view to return a static contact page
@@ -88,8 +91,7 @@ def registration_request(request):
 def get_dealerships(request):
     if request.method == "GET":
         dealerships = get_dealers_from_cf()
-        context = {"dealershi
-        ps": dealerships}
+        context = {"dealerships": dealerships}
         return render(request, 'djangoapp/index.html', context)
 
 
@@ -101,6 +103,7 @@ def get_dealer_details(request, dealer_id):
                    "reviews": reviews,
                    }
         return render(request, 'djangoapp/dealer_details.html', context)
+    
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
     if request.method == "GET":
